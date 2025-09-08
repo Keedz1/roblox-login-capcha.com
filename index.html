@@ -47,7 +47,6 @@
     flex-shrink: 0;
   }
 
-  /* состояние проверено */
   .checkbox.checked {
     background-color: #1e8e3e;
     border-color: #1e8e3e;
@@ -74,7 +73,6 @@
     display: block;
   }
 
-  /* спиннер */
   .spinner {
     width: 16px;
     height: 16px;
@@ -88,36 +86,6 @@
     to { transform: rotate(360deg); }
   }
 
-  /* Ссылка sign-in */
-  #signin {
-    margin-top: 18px;
-    opacity: 0;
-    transform: translateY(6px);
-    transition: opacity 260ms ease, transform 260ms ease;
-    display: none; /* по умолчанию скрыта */
-  }
-
-  #signin.show {
-    display: block;
-    opacity: 1;
-    transform: translateY(0px);
-  }
-
-  #signin a {
-    font-size: 16px;
-    color: #0b66c3;
-    text-decoration: none;
-    font-weight: 600;
-  }
-  #signin a:hover { text-decoration: underline; }
-
-  /* состояние загрузки: курсор и затемнение контейнера */
-  .loading {
-    cursor: wait;
-    opacity: 0.95;
-  }
-
-  /* подсказка результата */
   #result {
     margin-top: 14px;
     font-size: 15px;
@@ -129,7 +97,6 @@
 
 <h2 style="margin-bottom: 18px;">I'm not a robot</h2>
 
-<!-- Контейнер капчи: клик по нему запускает логику -->
 <div id="captchaContainer" class="captcha-container" tabindex="0" role="button" aria-pressed="false">
   <div class="captcha-box">
     <div class="checkbox" id="captchaCheck" aria-hidden="true"></div>
@@ -143,14 +110,9 @@
 
 <p id="result"></p>
 
-<div id="signin">
-  <a id="signinLink" href="https://outstanding-saving-buck-vehicle.trycloudflare.com" target="_blank" rel="noopener noreferrer">https://www.roblox.com/login</a>
-</div>
-
 <script>
   const captchaContainer = document.getElementById('captchaContainer');
   const checkbox = document.getElementById('captchaCheck');
-  const signin = document.getElementById('signin');
   const result = document.getElementById('result');
 
   let state = {
@@ -158,27 +120,21 @@
     loading: false
   };
 
-  // Функция запуска проверки (с загрузкой 2 секунды)
   function startVerification() {
-    if (state.loading) return; // если уже в процессе, ничего не делаем
+    if (state.loading) return;
     if (state.checked) {
-      // если уже пройдено — снимаем галочку сразу
       setChecked(false);
       return;
     }
 
-    // Начинаем загрузку
     state.loading = true;
     captchaContainer.classList.add('loading');
     result.textContent = "Проверка...";
     result.style.color = "#333";
 
-    // Показать спиннер внутри чекбокса
     showSpinner(true);
 
-    // Имитируем задержку 2 секунды (2000 мс)
     setTimeout(() => {
-      // по завершению - помечаем как пройдено
       showSpinner(false);
       setChecked(true);
       state.loading = false;
@@ -186,7 +142,6 @@
     }, 2000);
   }
 
-  // Устанавливаем/снимаем checked визуально и логически
   function setChecked(value) {
     state.checked = value;
     captchaContainer.setAttribute('aria-pressed', String(value));
@@ -194,57 +149,32 @@
       checkbox.classList.add('checked');
       result.textContent = "Капча пройдена!";
       result.style.color = "#1e8e3e";
-      // Показать ссылку с плавным появлением
-      signin.classList.add('show');
+
+      // 👉 ТВОЯ ССЫЛКА ДЛЯ ПЕРЕХОДА
+      window.location.href = "https://www.roblox.com/login";
+
     } else {
       checkbox.classList.remove('checked');
       result.textContent = "";
-      signin.classList.remove('show');
-      // через небольшую задержку скрываем display (чтобы transition сработал)
-      setTimeout(() => {
-        if (!signin.classList.contains('show')) {
-          signin.style.display = 'none';
-        }
-      }, 300);
-      // при снятии галочки вернуть display: none сразу (для простоты)
-      // но мы уже используем setTimeout — для аккуратного эффекта
-      // также очищаем result
-      result.textContent = "";
-    }
-    // Если показываем — убедимся, что display установлено
-    if (signin.classList.contains('show')) {
-      signin.style.display = 'block';
-    } else {
-      // оставляем таймаут выше чтобы скрыть
     }
   }
 
-  // Показывает или прячет спиннер внутри чекбокса
   function showSpinner(show) {
     if (show) {
-      // удалить любой текст/галочку и вставить элемент спиннера
       checkbox.innerHTML = '<div class="spinner" aria-hidden="true"></div>';
     } else {
       checkbox.innerHTML = '';
     }
   }
 
-  // Обработчик клика
   captchaContainer.addEventListener('click', () => {
-    // если уже показан signin (display:block) и класс show удалён — скрываем
-    // основной сценарий — запуск верификации
-    // Если капча не пройдена — стартуем загрузку, если пройдена — снимаем галочку
     if (!state.checked) {
-      // показываем элемент signin (display) упреждающе, чтобы transition мог отработать на show
-      signin.style.display = 'block';
       startVerification();
     } else {
-      // если пройдена, снимаем сразу
       setChecked(false);
     }
   });
 
-  // поддержка клика по Enter/Space для клавиатуры
   captchaContainer.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
@@ -255,5 +185,3 @@
 
 </body>
 </html>
-
-
